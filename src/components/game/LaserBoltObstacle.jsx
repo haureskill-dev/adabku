@@ -84,9 +84,9 @@ function LaserBadge3D({ label, low }) {
 function SingleLaserBolt({
   id,
   startX,
-  targetX,
+  _targetX,
   spawnZ,
-  targetZ,
+  _targetZ,
   low,
   label,
   speedZ,
