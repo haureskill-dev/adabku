@@ -102,3 +102,15 @@ Memperkaya variasi edukasi adab dengan menghadirkan 5 lingkungan latar belakang 
 
 ## 🏆 Kesimpulan & Refleksi Pengembangan
 Melalui pendekatan *Vibe Coding* yang terarah dan iteratif, game **Adabku** berhasil dikembangkan dari konsep dasar menjadi media edukasi karakter 3D berbasis web yang lengkap, stabil, ringan, berkinerja tinggi, dan patuh penuh terhadap kaidah syariat Islam.
+
+---
+
+## 📎 Lampiran: Log Riwayat Prompt Mentah (Raw Prompt Log)
+Untuk memverifikasi keaslian proses pengembangan dan integritas implementasi *Vibe Coding*, seluruh catatan prompt percakapan mentah dari sesi awal hingga deployment server terdokumentasi lengkap pada lampiran:
+* **Dokumen Terlampir:** `docs/LOG_PROMPT_MENTAH.md` (Total 14 prompt mentah dari 4 sesi pengembangan).
+* **Ringkasan Isi Sesi:**
+  1. *Sesi 1:* Inisialisasi Proyek, Konsep Dasar, & Arsitektur 3D Web (Prompt 1.1 - 1.3)
+  2. *Sesi 2:* Debugging Visual, Kamera POV 360°, & Desain 5 Level Adab (Prompt 2.1 - 2.4)
+  3. *Sesi 3:* UI/UX Ceria Tanpa Blur, Karakter Kapsul Faceless SD, & Multiplayer PeerJS (Prompt 3.1 - 3.4)
+  4. *Sesi 4:* Integrasi Branding Logo Adabku, Build Nixpacks, & Deployment Dokploy (Prompt 4.1 - 4.3)
+
