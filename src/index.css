@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+ * Design tokens Adabku — cerah, bersih, tanpa motif pelangi.
+ * Palet terbatas: hijau rumput, biru langit, kuning hangat, oranye.
+ * ------------------------------------------------------------------ */
+@theme {
+  --font-display: 'Baloo 2', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+
+  --color-ink: #1e2a3a;
+  --color-ink-soft: #52627a;
+  --color-cream: #fffaf0;
+  --color-grass: #5cb85c;
+  --color-grass-dark: #3f9142;
+  --color-sky: #38b6ff;
+  --color-sky-dark: #1592dc;
+  --color-sun: #ffc23d;
+  --color-sun-dark: #e8a512;
+  --color-orange: #ff8a3d;
+  --color-orange-dark: #e86d1d;
+  --color-laser: #ff2e4d;
+
+  --animate-pop: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.35) both;
+  --animate-fade: fade 0.3s ease-out both;
+  --animate-toast: toast 2.4s ease-in-out both;
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.92);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes toast {
+    0% {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.95);
+    }
+    12%,
+    85% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes pulse-soft {
+    50% {
+      transform: scale(1.06);
+    }
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply m-0 h-full w-full overflow-hidden bg-sky font-body text-ink antialiased select-none;
+  }
+  button {
+    @apply cursor-pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
