@@ -12,129 +12,139 @@ import AdabkuLogo from './AdabkuLogo'
 function BoyCapsulePreview({ selected = false }) {
   return (
     <div className="relative mx-auto my-1 flex h-24 w-16 items-center justify-center">
-      <svg viewBox="0 0 80 120" className="h-full w-full drop-shadow-md">
-        {/* Bayangan bawah */}
-        <ellipse cx="40" cy="114" rx="26" ry="6" fill="#000000" opacity="0.15" />
+      <svg viewBox="0 0 80 125" className="h-full w-full drop-shadow-md">
+        {/* Bayangan lantai */}
+        <ellipse cx="40" cy="118" rx="24" ry="5" fill="#000000" opacity="0.16" />
 
-        {/* Tubuh Kapsul Dasar (Kapsul Geometri Pill) */}
         <defs>
-          <clipPath id="boyCapsuleClip">
-            <rect x="15" y="14" width="50" height="96" rx="25" ry="25" />
+          <clipPath id="boyClip">
+            <rect x="18" y="8" width="44" height="106" rx="22" ry="22" />
           </clipPath>
-          <linearGradient id="boyShirtGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#f1f5f9" />
-            <stop offset="50%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#e2e8f0" />
-          </linearGradient>
-          <linearGradient id="boyPantsGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#b91c1c" />
-            <stop offset="50%" stopColor="#dc2626" />
-            <stop offset="100%" stopColor="#991b1b" />
-          </linearGradient>
-          <linearGradient id="peciGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#1e293b" />
-            <stop offset="50%" stopColor="#0f172a" />
-            <stop offset="100%" stopColor="#020617" />
-          </linearGradient>
         </defs>
 
-        {/* Isi Kapsul terpotong silinder */}
-        <g clipPath="url(#boyCapsuleClip)">
-          {/* Bagian Bawah: Celana Merah SD */}
-          <rect x="15" y="66" width="50" height="44" fill="url(#boyPantsGrad)" />
-          {/* Sabuk Hitam */}
-          <rect x="15" y="63" width="50" height="4" fill="#1e293b" />
-          <rect x="36" y="62" width="8" height="6" fill="#facc15" rx="1" />
-          {/* Bagian Atas: Kemeja Putih SD */}
-          <rect x="15" y="14" width="50" height="50" fill="url(#boyShirtGrad)" />
-          {/* Kerah & Dasi Merah SD */}
-          <polygon points="40,32 35,46 40,54 45,46" fill="#dc2626" />
+        {/* Konten Kapsul Terpotong Rapi Sesuai Referensi Gambar */}
+        <g clipPath="url(#boyClip)">
+          {/* 1. Sepatu Hitam di Bawah */}
+          <rect x="18" y="96" width="44" height="20" fill="#1e293b" />
+          {/* Garis pemisah sepatu */}
+          <line x1="40" y1="96" x2="40" y2="114" stroke="#0f172a" strokeWidth="1.5" />
+
+          {/* 2. Kaos Kaki Putih */}
+          <rect x="18" y="90" width="44" height="6" fill="#ffffff" />
+          <line x1="40" y1="90" x2="40" y2="96" stroke="#e2e8f0" strokeWidth="1" />
+
+          {/* 3. Celana Merah SD */}
+          <rect x="18" y="60" width="44" height="30" fill="#dc2626" />
+          <line x1="40" y1="64" x2="40" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+
+          {/* 4. Kemeja Putih SD */}
+          <rect x="18" y="38" width="44" height="22" fill="#ffffff" />
+
+          {/* Kerah Putih & Dasi Merah SD */}
+          <path d="M 28 38 L 40 46 L 52 38" fill="none" stroke="#e2e8f0" strokeWidth="1.5" />
+          {/* Dasi Merah Panjang */}
+          <polygon points="40,43 37,45 37,56 40,60 43,56 43,45" fill="#dc2626" />
+          {/* Simpul Dasi */}
+          <polygon points="38,42 42,42 41,45 39,45" fill="#b91c1c" />
+
+          {/* 5. Rambut Hitam Samping */}
+          <rect x="18" y="24" width="44" height="16" fill="#292524" />
+
+          {/* 6. Wajah Kulit Peach Polos (100% Faceless) */}
+          <rect x="21" y="24" width="38" height="15" rx="4" fill="#fed7aa" />
+
+          {/* 7. Topi SD Merah Putih */}
+          {/* Mahkota Topi Merah */}
+          <path d="M 18 8 Q 40 3 62 8 L 62 25 L 18 25 Z" fill="#dc2626" />
+          {/* Panel Depan Putih Khas Topi SD */}
+          <path d="M 27 25 Q 28 14 40 14 Q 52 14 53 25 Z" fill="#ffffff" />
+          {/* Lambang Garuda / SD Kuning Emas */}
+          <path
+            d="M 40 17 L 38 19 L 39 21 L 40 20 L 41 21 L 42 19 Z"
+            fill="#f59e0b"
+          />
+          {/* Pet / Visor Topi Merah */}
+          <path d="M 16 25 Q 40 30 64 25 Q 40 23 16 25" fill="#b91c1c" />
         </g>
 
         {/* Outline Halus Kapsul */}
         <rect
-          x="15"
-          y="14"
-          width="50"
-          height="96"
-          rx="25"
-          ry="25"
+          x="18"
+          y="8"
+          width="44"
+          height="106"
+          rx="22"
+          ry="22"
           fill="none"
-          stroke={selected ? '#10b981' : '#cbd5e1'}
-          strokeWidth="2.5"
+          stroke={selected ? '#10b981' : '#334155'}
+          strokeWidth={selected ? '3' : '2'}
         />
-
-        {/* Model Peci / Songkok Hitam Polos di Atas Kapsul */}
-        <path
-          d="M 23 16 Q 40 10 57 16 L 55 27 Q 40 23 25 27 Z"
-          fill="url(#peciGrad)"
-          stroke="#0f172a"
-          strokeWidth="1.5"
-        />
-        {/* Garis Aksen Emas Peci */}
-        <path d="M 25 26 Q 40 22 55 26" stroke="#facc15" strokeWidth="1" fill="none" opacity="0.8" />
       </svg>
     </div>
   )
 }
 
-/**
- * Preview Visual 3D Kapsul SD Perempuan (Strictly Faceless):
- * - Kapsul Geometris dengan seragam SD (Kemeja Putih + Rok Panjang Merah)
- * - Jilbab Putih Polos melingkari kepala dan bahu kapsul
- * - Bebas mata/hidung/mulut (100% Faceless Syariat Compliant)
- */
 function GirlCapsulePreview({ selected = false }) {
   return (
     <div className="relative mx-auto my-1 flex h-24 w-16 items-center justify-center">
-      <svg viewBox="0 0 80 120" className="h-full w-full drop-shadow-md">
-        {/* Bayangan bawah */}
-        <ellipse cx="40" cy="114" rx="26" ry="6" fill="#000000" opacity="0.15" />
+      <svg viewBox="0 0 80 125" className="h-full w-full drop-shadow-md">
+        {/* Bayangan lantai */}
+        <ellipse cx="40" cy="118" rx="24" ry="5" fill="#000000" opacity="0.16" />
 
         <defs>
-          <clipPath id="girlCapsuleClip">
-            <rect x="15" y="14" width="50" height="96" rx="25" ry="25" />
+          <clipPath id="girlClip">
+            <rect x="18" y="8" width="44" height="106" rx="22" ry="22" />
           </clipPath>
-          <linearGradient id="girlSkirtGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#b91c1c" />
-            <stop offset="50%" stopColor="#dc2626" />
-            <stop offset="100%" stopColor="#991b1b" />
-          </linearGradient>
-          <linearGradient id="jilbabGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="70%" stopColor="#f8fafc" />
-            <stop offset="100%" stopColor="#e2e8f0" />
-          </linearGradient>
         </defs>
 
-        {/* Tubuh Kapsul: Rok Merah Panjang */}
-        <g clipPath="url(#girlCapsuleClip)">
-          <rect x="15" y="58" width="50" height="52" fill="url(#girlSkirtGrad)" />
+        {/* Konten Kapsul Terpotong Rapi Sesuai Referensi Gambar */}
+        <g clipPath="url(#girlClip)">
+          {/* 1. Sepatu Hitam di Bawah */}
+          <rect x="18" y="96" width="44" height="20" fill="#1e293b" />
+          <line x1="40" y1="96" x2="40" y2="114" stroke="#0f172a" strokeWidth="1.5" />
+
+          {/* 2. Kaos Kaki Putih */}
+          <rect x="18" y="90" width="44" height="6" fill="#ffffff" />
+
+          {/* 3. Rok Rempel / Lipit Merah SD */}
+          <rect x="18" y="58" width="44" height="32" fill="#dc2626" />
+          {/* Garis-garis Rempel / Lipit Khas Rok SD */}
+          <line x1="24" y1="58" x2="23" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="30" y1="58" x2="29" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="36" y1="58" x2="35" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="40" y1="58" x2="40" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="45" y1="58" x2="46" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="51" y1="58" x2="52" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+          <line x1="57" y1="58" x2="58" y2="90" stroke="#991b1b" strokeWidth="1.5" />
+
+          {/* 4. Baju Kurung / Jilbab Putih Menutupi Dada */}
+          <rect x="18" y="38" width="44" height="20" fill="#ffffff" />
+          {/* Badge / Lambang Sekolah di Dada Kiri */}
+          <path
+            d="M 52 46 Q 52 44 54 44 Q 56 44 56 46 L 56 49 Q 54 51 52 49 Z"
+            fill="#dc2626"
+            stroke="#f59e0b"
+            strokeWidth="0.8"
+          />
+
+          {/* 5. Jilbab Putih Bersih di Kepala */}
+          <rect x="18" y="8" width="44" height="42" fill="#ffffff" />
+
+          {/* 6. Bukaan Wajah Oval Peach (100% Faceless) */}
+          <ellipse cx="40" cy="30" rx="14" ry="16" fill="#fed7aa" />
         </g>
 
-        {/* Model 3D Jilbab Putih Polos Membungkus Kepala Kapsul */}
-        <path
-          d="M 17 38 C 17 14, 63 14, 63 38 C 63 52, 60 58, 56 62 C 48 66, 32 66, 24 62 C 20 58, 17 52, 17 38 Z"
-          fill="url(#jilbabGrad)"
-          stroke={selected ? '#ec4899' : '#cbd5e1'}
-          strokeWidth="2"
-        />
-
-        {/* Lipatan Lembut Jilbab Bawah Dada */}
-        <path
-          d="M 27 58 Q 40 64 53 58"
-          stroke="#cbd5e1"
-          strokeWidth="1.5"
+        {/* Outline Halus Kapsul */}
+        <rect
+          x="18"
+          y="8"
+          width="44"
+          height="106"
+          rx="22"
+          ry="22"
           fill="none"
-          strokeLinecap="round"
-        />
-
-        {/* Outline Halus Kapsul Bawah */}
-        <path
-          d="M 15 58 L 15 85 C 15 98, 65 98, 65 85 L 65 58"
-          fill="none"
-          stroke={selected ? '#ec4899' : '#cbd5e1'}
-          strokeWidth="2.5"
+          stroke={selected ? '#ec4899' : '#334155'}
+          strokeWidth={selected ? '3' : '2'}
         />
       </svg>
     </div>

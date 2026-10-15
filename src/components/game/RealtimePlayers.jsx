@@ -46,7 +46,7 @@ function RemotePlayerNametag({ name, color = '#38bdf8', level = 1, gender = 'lak
     ctx.fillText(name.slice(0, 13), 68, 44)
 
     // Subtitle Karakter & Level
-    const genderLabel = gender === 'perempuan' ? 'Berjilbab' : 'Berpeci'
+    const genderLabel = gender === 'perempuan' ? 'Berjilbab' : 'Topi SD'
     ctx.fillStyle = color
     ctx.font = 'bold 20px sans-serif'
     ctx.fillText(`LV.${level} • ${genderLabel} • Teman Adab`, 68, 75)

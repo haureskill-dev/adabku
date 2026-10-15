@@ -3,18 +3,22 @@ import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore'
 
 /**
- * Model Karakter Kapsul Edukasi SD Faceless (Syariat Compliant).
- * - Pilihan Karakter:
- *   1) Anak SD Laki-laki: Seragam SD Putih-Merah + Peci Hitam Polos.
- *   2) Anak SD Perempuan: Seragam SD Putih-Merah + Jilbab Putih Polos.
- * - Strictly Faceless: Polos tanpa mata, hidung, atau mulut.
- * - Animasi squash & stretch prosedural imut, tangan & kaki melayang lincah.
+ * Model Karakter Kapsul Edukasi SD Sederhana & Faceless (Sesuai Referensi Gambar).
+ * 1) Anak SD Laki-laki:
+ *    - Kapsul geometris bersih seragam SD (Kemeja Putih + Dasi Merah + Celana Merah + Kaos Kaki Putih + Sepatu Hitam).
+ *    - Topi SD Merah-Putih di kepala dengan pet visor dan emblem emas.
+ *    - Wajah polos warna kulit peach (Strictly Faceless, Syariat Compliant).
+ * 2) Anak SD Perempuan:
+ *    - Kapsul geometris seragam SD (Jilbab Putih Polos + Rok Rempel Merah SD + Kaos Kaki Putih + Sepatu Hitam).
+ *    - Lambang/badge sekolah di dada.
+ *    - Wajah oval polos peach (Strictly Faceless).
+ * Bentuk kapsul disederhanakan tanpa bola tangan/kaki melayang agar rapi, proporsional, dan estetik.
  */
 export default function CapsuleCharacter({
-  gender: propGender, // 'boy' | 'girl' (opsional, jika tidak ada baca dari store)
-  color, // override warna opsional
+  gender: propGender, // 'boy' | 'girl' | 'laki-laki' | 'perempuan'
+  color,
   accentColor,
-  crouchT = 0, // 0 = berdiri, 1 = menunduk gepeng
+  crouchT = 0,
   isJumping = false,
   isWalking = false,
   steerTilt = 0,
@@ -29,234 +33,224 @@ export default function CapsuleCharacter({
 
   const root = useRef()
   const bodyGroup = useRef()
-  const leftHand = useRef()
-  const rightHand = useRef()
-  const leftFoot = useRef()
-  const rightFoot = useRef()
-  const shadowMesh = useRef()
 
-  // Material Seragam SD & Peci / Jilbab
-  const shirtMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: color || '#f8fafc', // Putih kemeja SD bersih
-        roughness: 0.3,
-        metalness: 0.05,
-      }),
-    [color],
-  )
-
-  const redMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: accentColor || '#dc2626', // Merah khas celana/rok SD
+  // Material Warna Sesuai Seragam SD Indonesia
+  const materials = useMemo(() => {
+    return {
+      whiteShirt: new THREE.MeshStandardMaterial({
+        color: color || '#ffffff',
         roughness: 0.35,
-        metalness: 0.05,
+        metalness: 0.02,
       }),
-    [accentColor],
-  )
-
-  const peciMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: '#18181b', // Hitam pekat beludru peci
-        roughness: 0.85,
-        metalness: 0.05,
+      redFabric: new THREE.MeshStandardMaterial({
+        color: accentColor || '#dc2626',
+        roughness: 0.4,
+        metalness: 0.02,
       }),
-    [],
-  )
-
-  const jilbabMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: '#ffffff', // Putih jilbab polos
+      darkRedFabric: new THREE.MeshStandardMaterial({
+        color: '#b91c1c',
+        roughness: 0.4,
+        metalness: 0.02,
+      }),
+      skin: new THREE.MeshStandardMaterial({
+        color: '#fed7aa', // Peach skin tone polos (faceless)
         roughness: 0.45,
         metalness: 0.02,
       }),
-    [],
-  )
-
-  const skinMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: '#fde68a', // Warna kulit pastel polos (faceless)
-        roughness: 0.35,
-        metalness: 0.05,
-      }),
-    [],
-  )
-
-  const beltMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: '#0f172a',
-        roughness: 0.4,
+      blackShoes: new THREE.MeshStandardMaterial({
+        color: '#1e293b', // Sepatu hitam siswa SD
+        roughness: 0.5,
         metalness: 0.1,
       }),
-    [],
-  )
+      hair: new THREE.MeshStandardMaterial({
+        color: '#292524', // Rambut gelap samping
+        roughness: 0.8,
+        metalness: 0.02,
+      }),
+      goldBadge: new THREE.MeshStandardMaterial({
+        color: '#f59e0b', // Emblem Garuda / SD kuning emas
+        roughness: 0.3,
+        metalness: 0.4,
+      }),
+    }
+  }, [color, accentColor])
 
-  // Hitung efek squash & stretch prosedural imut
-  const bounce = isWalking && !isJumping ? Math.abs(Math.sin(runPhase * 2)) * 0.08 : 0
+  // Hitung deformasi squash, stretch & wobble animasi berjalan
+  const bounce = isWalking && !isJumping ? Math.abs(Math.sin(runPhase * 2)) * 0.06 : 0
+  const sideWobble = isWalking && !isJumping ? Math.sin(runPhase) * 0.06 : 0
 
   let targetScaleY = 1 + bounce
-  let targetScaleXZ = 1 - bounce * 0.5
+  let targetScaleXZ = 1 - bounce * 0.4
 
   if (isJumping) {
-    targetScaleY = 1.25
-    targetScaleXZ = 0.88
+    targetScaleY = 1.18
+    targetScaleXZ = 0.92
   }
 
-  // Saat menunduk: tubuh menjadi gepeng imut meluncur di lantai
+  // Saat menunduk: tubuh memendek gepeng meluncur di lantai
   const finalScaleY = THREE.MathUtils.lerp(targetScaleY, 0.52, crouchT)
-  const finalScaleXZ = THREE.MathUtils.lerp(targetScaleXZ, 1.45, crouchT)
-  const bodyCenterY = THREE.MathUtils.lerp(0.65, 0.35, crouchT)
-
-  // Gerak tangan & kaki imut
-  const armSwing = isWalking && !isJumping ? Math.sin(runPhase) * 0.35 : 0
-  const legSwing = isWalking && !isJumping ? Math.sin(runPhase) * 0.25 : 0
-  const jumpArmY = isJumping ? 0.3 : 0
+  const finalScaleXZ = THREE.MathUtils.lerp(targetScaleXZ, 1.38, crouchT)
+  const bodyCenterY = THREE.MathUtils.lerp(0.66, 0.35, crouchT)
 
   return (
     <group ref={root}>
-      {/* 1. Kontak bayangan bulat lembut di lantai */}
+      {/* 1. Kontak bayangan bulat di lantai */}
       <mesh
-        ref={shadowMesh}
         rotation-x={-Math.PI / 2}
         position={[0, 0.02, 0]}
-        scale={isJumping ? [0.7, 0.7, 1] : [finalScaleXZ * 0.9, finalScaleXZ * 0.9, 1]}
+        scale={isJumping ? [0.65, 0.65, 1] : [finalScaleXZ * 0.88, finalScaleXZ * 0.88, 1]}
       >
-        <circleGeometry args={[0.38, 24]} />
+        <circleGeometry args={[0.36, 24]} />
         <meshBasicMaterial color="#0f172a" transparent opacity={isJumping ? 0.15 : 0.32} />
       </mesh>
 
-      {/* 2. Badan Kapsul Utama dengan Animasi Squash, Stretch & Tilt */}
+      {/* 2. Tubuh Kapsul Tunggal Rapi (Sesuai Desain Referensi) */}
       <group
         ref={bodyGroup}
         position={[0, bodyCenterY, 0]}
-        rotation-z={steerTilt * -0.22}
+        rotation-z={steerTilt * -0.22 + sideWobble}
         rotation-x={forwardTilt * 0.15}
         scale={[finalScaleXZ, finalScaleY, finalScaleXZ]}
       >
-        {/* Kapsul Dasar (Kulit Pastel Bersih / Faceless) */}
-        <mesh castShadow receiveShadow material={skinMat}>
-          <capsuleGeometry args={[0.31, 0.62, 16, 24]} />
+        {/* Kapsul Dasar (Bentuk Pill Sederhana) */}
+        <mesh castShadow receiveShadow material={materials.whiteShirt}>
+          <capsuleGeometry args={[0.31, 0.66, 24, 32]} />
         </mesh>
 
-        {/* Bagian Baju Seragam SD Atas (Kemeja Putih) */}
-        <mesh position={[0, 0.06, 0]} material={shirtMat}>
-          <cylinderGeometry args={[0.325, 0.335, 0.34, 24]} />
+        {/* Sepatu Hitam di Bagian Bawah Kapsul */}
+        <mesh position={[0, -0.37, 0]} material={materials.blackShoes}>
+          <cylinderGeometry args={[0.305, 0.312, 0.18, 24]} />
+        </mesh>
+        <mesh position={[0, -0.47, 0]} material={materials.blackShoes}>
+          <sphereGeometry args={[0.31, 24, 12, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5]} />
         </mesh>
 
-        {/* Bagian Celana / Rok Seragam SD Bawah (Merah SD) */}
-        <mesh position={[0, -0.21, 0]} material={redMat}>
-          {isGirl ? (
-            <cylinderGeometry args={[0.33, 0.42, 0.38, 24]} />
-          ) : (
-            <cylinderGeometry args={[0.325, 0.31, 0.32, 24]} />
-          )}
+        {/* Garis Kaus Kaki Putih */}
+        <mesh position={[0, -0.27, 0]} material={materials.whiteShirt}>
+          <cylinderGeometry args={[0.314, 0.314, 0.06, 24]} />
         </mesh>
 
-        {/* Sabuk Hitam SD di Pinggang */}
-        <mesh position={[0, -0.06, 0]} material={beltMat}>
-          <torusGeometry args={[0.332, 0.025, 8, 24]} />
-        </mesh>
-
-        {/* Dasi Merah SD Segitiga di Dada (Anak Laki-laki) */}
+        {/* ----------------- VARIAN ANAK LAKI-LAKI ----------------- */}
         {!isGirl && (
-          <group position={[0, 0.07, 0.33]}>
-            <mesh>
-              <coneGeometry args={[0.07, 0.22, 3]} />
-              <meshStandardMaterial color="#dc2626" roughness={0.3} />
+          <>
+            {/* Celana Pendek Merah SD */}
+            <mesh position={[0, -0.11, 0]} material={materials.redFabric}>
+              <cylinderGeometry args={[0.316, 0.316, 0.28, 24]} />
             </mesh>
-            <mesh position={[0, 0.1, 0]}>
-              <sphereGeometry args={[0.035, 8, 8]} />
-              <meshStandardMaterial color="#b91c1c" />
+            {/* Garis Pemisah Celana Depan */}
+            <mesh position={[0, -0.11, 0.31]}>
+              <boxGeometry args={[0.015, 0.26, 0.02]} />
+              <meshBasicMaterial color="#991b1b" />
             </mesh>
-          </group>
+
+            {/* Baju Kemeja Putih SD */}
+            <mesh position={[0, 0.13, 0]} material={materials.whiteShirt}>
+              <cylinderGeometry args={[0.318, 0.318, 0.22, 24]} />
+            </mesh>
+
+            {/* Dasi Merah SD Segitiga Panjang di Dada */}
+            <group position={[0, 0.12, 0.312]}>
+              {/* Simpul Dasi Segitiga */}
+              <mesh position={[0, 0.06, 0]} rotation-z={Math.PI}>
+                <coneGeometry args={[0.035, 0.045, 3]} />
+                <meshStandardMaterial color="#b91c1c" roughness={0.3} />
+              </mesh>
+              {/* Badan Dasi Merah Panjang */}
+              <mesh position={[0, -0.04, 0]}>
+                <boxGeometry args={[0.05, 0.14, 0.015]} />
+                <meshStandardMaterial color="#dc2626" roughness={0.3} />
+              </mesh>
+              {/* Ujung Lancip Dasi */}
+              <mesh position={[0, -0.12, 0]} rotation-z={Math.PI}>
+                <coneGeometry args={[0.035, 0.04, 3]} />
+                <meshStandardMaterial color="#dc2626" roughness={0.3} />
+              </mesh>
+            </group>
+
+            {/* Wajah Peach Polos (100% Faceless) */}
+            <mesh position={[0, 0.33, 0.04]} material={materials.skin}>
+              <sphereGeometry args={[0.308, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.45]} />
+            </mesh>
+
+            {/* Rambut Gelap di Samping & Belakang Kepala */}
+            <mesh position={[0, 0.34, -0.04]} material={materials.hair}>
+              <cylinderGeometry args={[0.312, 0.316, 0.14, 24, 1, false, Math.PI * 0.25, Math.PI * 1.5]} />
+            </mesh>
+
+            {/* Topi SD Merah-Putih Khas Pelajar SD */}
+            <group position={[0, 0.42, 0]}>
+              {/* Bagian Mahkota Belakang & Atas (Merah) */}
+              <mesh material={materials.redFabric}>
+                <sphereGeometry args={[0.32, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.4]} />
+              </mesh>
+              {/* Panel Depan Putih Khas Topi SD */}
+              <mesh position={[0, -0.01, 0.08]} material={materials.whiteShirt}>
+                <cylinderGeometry args={[0.318, 0.322, 0.12, 24, 1, false, -Math.PI * 0.28, Math.PI * 0.56]} />
+              </mesh>
+              {/* Pet / Visor Topi Merah Melengkung ke Depan */}
+              <mesh position={[0, -0.06, 0.24]} rotation-x={0.25} material={materials.darkRedFabric}>
+                <boxGeometry args={[0.34, 0.025, 0.14]} />
+              </mesh>
+              {/* Lambang Garuda / SD Kuning Emas di Panel Depan */}
+              <mesh position={[0, 0.01, 0.32]} material={materials.goldBadge}>
+                <boxGeometry args={[0.045, 0.05, 0.01]} />
+              </mesh>
+            </group>
+          </>
         )}
 
-        {/* Pilihan 1: PECI HITAM POLOS (Anak SD Laki-laki) */}
-        {!isGirl && (
-          <group position={[0, 0.39, 0]} scale={[0.92, 1, 1.05]}>
-            <mesh castShadow material={peciMat}>
-              <cylinderGeometry args={[0.26, 0.28, 0.2, 24]} />
-            </mesh>
-            {/* Bagian atas peci oval melengkung rapi */}
-            <mesh position={[0, 0.1, 0]} material={peciMat}>
-              <sphereGeometry args={[0.26, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.45]} />
-            </mesh>
-          </group>
-        )}
-
-        {/* Pilihan 2: JILBAB PUTIH POLOS (Anak SD Perempuan) */}
+        {/* ----------------- VARIAN ANAK PEREMPUAN ----------------- */}
         {isGirl && (
-          <group position={[0, 0.24, 0]}>
-            {/* Tudung Kepala Jilbab Melengkung Anggun */}
-            <mesh castShadow material={jilbabMat}>
-              <sphereGeometry args={[0.34, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.72]} />
+          <>
+            {/* Rok Rempel / Lipit Merah SD */}
+            <group position={[0, -0.1, 0]}>
+              <mesh material={materials.redFabric}>
+                <cylinderGeometry args={[0.318, 0.33, 0.34, 24]} />
+              </mesh>
+              {/* Aksen Garis Rempel / Lipit Vertikal Khas Rok SD */}
+              {[...Array(8)].map((_, i) => {
+                const angle = (i / 8) * Math.PI * 2
+                const rx = Math.sin(angle) * 0.326
+                const rz = Math.cos(angle) * 0.326
+                return (
+                  <mesh key={i} position={[rx, 0, rz]} rotation-y={angle}>
+                    <boxGeometry args={[0.015, 0.33, 0.01]} />
+                    <meshBasicMaterial color="#991b1b" />
+                  </mesh>
+                )
+              })}
+            </group>
+
+            {/* Baju / Jilbab Putih Bersih Menutupi Dada */}
+            <mesh position={[0, 0.14, 0]} material={materials.whiteShirt}>
+              <cylinderGeometry args={[0.322, 0.322, 0.2, 24]} />
             </mesh>
-            {/* Draping / Juntai Kerudung Syar'i ke Pundak */}
-            <mesh position={[0, -0.16, 0]} material={jilbabMat}>
-              <cylinderGeometry args={[0.34, 0.44, 0.28, 24, 1, true]} />
+
+            {/* Badge / Lambang Sekolah di Dada Kiri */}
+            <mesh position={[0.13, 0.14, 0.315]} material={materials.goldBadge}>
+              <boxGeometry args={[0.045, 0.055, 0.01]} />
             </mesh>
-          </group>
+
+            {/* Jilbab Putih Bersih Melingkupi Kepala */}
+            <group position={[0, 0.38, 0]}>
+              <mesh material={materials.whiteShirt}>
+                <sphereGeometry args={[0.325, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.65]} />
+              </mesh>
+            </group>
+
+            {/* Bukaan Wajah Oval Peach (100% Faceless Sesuai Gambar) */}
+            <mesh position={[0, 0.32, 0.11]} rotation-x={-0.08} material={materials.skin}>
+              <sphereGeometry args={[0.23, 20, 16, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+            </mesh>
+          </>
         )}
-
-        {/* Tas Punggung Anak SD di Belakang */}
-        <mesh position={[0, 0.02, 0.3]} castShadow material={redMat}>
-          <capsuleGeometry args={[0.13, 0.26, 12, 16]} />
-        </mesh>
       </group>
 
-      {/* 3. Tangan Mengapung Imut (Floating Mittens Putih Kemeja SD) */}
-      <group position={[0, bodyCenterY, 0]} rotation-z={steerTilt * -0.15}>
-        <mesh
-          ref={leftHand}
-          position={[-0.42 * finalScaleXZ, jumpArmY - armSwing * 0.15, -armSwing * 0.2]}
-          castShadow
-          material={shirtMat}
-        >
-          <sphereGeometry args={[0.08, 16, 16]} />
-        </mesh>
-
-        <mesh
-          ref={rightHand}
-          position={[0.42 * finalScaleXZ, jumpArmY + armSwing * 0.15, armSwing * 0.2]}
-          castShadow
-          material={shirtMat}
-        >
-          <sphereGeometry args={[0.08, 16, 16]} />
-        </mesh>
-      </group>
-
-      {/* 4. Kaki Mengapung Imut (Sepatu Hitam Siswa SD) */}
-      {!isJumping && (
-        <group position={[0, 0.1, 0]}>
-          <mesh
-            ref={leftFoot}
-            position={[-0.16, THREE.MathUtils.lerp(0, -0.05, crouchT), -legSwing * 0.2]}
-            castShadow
-            material={beltMat}
-          >
-            <capsuleGeometry args={[0.075, 0.1, 8, 12]} />
-          </mesh>
-          <mesh
-            ref={rightFoot}
-            position={[0.16, THREE.MathUtils.lerp(0, -0.05, crouchT), legSwing * 0.2]}
-            castShadow
-            material={beltMat}
-          >
-            <capsuleGeometry args={[0.075, 0.1, 8, 12]} />
-          </mesh>
-        </group>
-      )}
-
-      {/* 5. Cincin Perisai Berpendar (Jika Memiliki Perisai Adab) */}
+      {/* 3. Cincin Perisai Berpendar (Jika Memiliki Perisai Adab) */}
       {shields > 0 && (
         <group position={[0, bodyCenterY, 0]}>
           <mesh rotation-x={Math.PI / 2}>
-            <torusGeometry args={[0.65, 0.025, 16, 32]} />
+            <torusGeometry args={[0.55, 0.02, 16, 32]} />
             <meshBasicMaterial
               color="#38bdf8"
               transparent
@@ -265,7 +259,7 @@ export default function CapsuleCharacter({
             />
           </mesh>
           <mesh rotation-y={Math.PI / 3}>
-            <torusGeometry args={[0.62, 0.02, 16, 32]} />
+            <torusGeometry args={[0.52, 0.018, 16, 32]} />
             <meshBasicMaterial
               color="#67e8f9"
               transparent
@@ -276,10 +270,10 @@ export default function CapsuleCharacter({
         </group>
       )}
 
-      {/* 6. Efek Kedipan Saat Kebal (Invulnerable) */}
+      {/* 4. Efek Kedipan Saat Kebal (Invulnerable) */}
       {invulnerable && (
         <mesh position={[0, bodyCenterY, 0]}>
-          <sphereGeometry args={[0.55, 16, 16]} />
+          <sphereGeometry args={[0.48, 16, 16]} />
           <meshBasicMaterial
             color="#ffffff"
             transparent

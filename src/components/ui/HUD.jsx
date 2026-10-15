@@ -274,28 +274,35 @@ export default function HUD() {
         {!isPointerLocked ? (
           <button
             type="button"
+            data-pointerlock="true"
             onClick={() => {
-              const canvas = document.querySelector('canvas') || document.getElementById('game-canvas')
-              if (canvas && document.pointerLockElement !== canvas) {
-                canvas.requestPointerLock?.()
-              }
+              const canvas = document.querySelector('canvas') || document.getElementById('game-canvas') || document.body
+              canvas?.requestPointerLock?.()
             }}
-            className="pointer-events-auto group flex items-center gap-2 rounded-full border border-sky-300/80 bg-white/95 px-3.5 py-1.5 text-xs font-bold text-sky-950 shadow-md backdrop-blur-sm transition-all hover:bg-sky-50 active:scale-95"
+            className="pointer-events-auto group flex items-center gap-2 rounded-full border border-sky-300/80 bg-white/95 px-3.5 py-1.5 text-xs font-bold text-sky-950 shadow-md backdrop-blur-sm transition-all hover:bg-sky-50 active:scale-95 cursor-pointer"
             aria-label="Aktifkan Kontrol 360 Mouse"
           >
             <span className="grid size-5 place-items-center rounded-full bg-sky-100 text-xs">🖱️</span>
             <span>
-              <strong>Klik 2x</strong> pada layar untuk mengaktifkan Kontrol 360° Mouse{' '}
+              <strong>Klik 2x</strong> pada layar / tombol ini untuk Kontrol 360° Mouse{' '}
               <span className="text-slate-500 font-normal">(Tekan ESC untuk keluar)</span>
             </span>
           </button>
         ) : (
-          <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-emerald-400 bg-emerald-950/90 px-3.5 py-1.5 text-xs font-bold text-emerald-200 shadow-lg backdrop-blur-sm">
+          <button
+            type="button"
+            data-pointerlock="true"
+            onClick={() => {
+              document.exitPointerLock?.()
+            }}
+            className="pointer-events-auto flex items-center gap-2 rounded-full border border-emerald-400 bg-emerald-950/90 px-3.5 py-1.5 text-xs font-bold text-emerald-200 shadow-lg backdrop-blur-sm cursor-pointer hover:bg-emerald-900 transition-colors"
+            title="Klik untuk keluar dari kontrol mouse"
+          >
             <span className="inline-block size-2 rounded-full bg-emerald-400 animate-ping" />
             <span>
-              Kontrol 360° Mouse Aktif <span className="text-emerald-400/80 font-normal">(Tekan ESC untuk keluar)</span>
+              Kontrol 360° Mouse Aktif <span className="text-emerald-400/80 font-normal">(Klik / Tekan ESC untuk keluar)</span>
             </span>
-          </div>
+          </button>
         )}
       </div>
 

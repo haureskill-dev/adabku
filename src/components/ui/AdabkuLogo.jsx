@@ -24,19 +24,30 @@ export default function AdabkuLogo({
   const [imgError, setImgError] = useState(false)
   const sizeClasses = SIZES[size] || size
 
+  const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`
+  const logoSrc = `${baseUrl}logo.png`
+
   return (
     <div
-      className={`relative select-none flex-shrink-0 rounded-full flex items-center justify-center bg-white ${
+      className={`relative select-none flex-shrink-0 rounded-full flex items-center justify-center bg-white overflow-hidden ${
         showBorder ? 'border-2 sm:border-3 border-emerald-400 shadow-md ring-2 ring-emerald-100' : ''
       } ${sizeClasses} ${className}`}
       aria-label="Logo Adabku"
     >
       {!imgError ? (
         <img
-          src="/logo.png"
-          alt="Logo Adabku Bulat"
-          onError={() => setImgError(true)}
-          className={`h-full w-full rounded-full object-cover p-1 transition-transform hover:scale-105 ${imgClassName}`}
+          src={logoSrc}
+          alt="Logo Adabku Tunas 2 Daun 3D"
+          onError={(e) => {
+            if (!e.currentTarget.src.includes('logo.png')) {
+              e.currentTarget.src = './logo.png'
+            } else {
+              setImgError(true)
+            }
+          }}
+          className={`h-full w-full rounded-full object-contain p-0.5 transition-transform hover:scale-105 ${imgClassName}`}
         />
       ) : (
         <div className="grid place-items-center p-1 text-emerald-600">

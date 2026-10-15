@@ -66,24 +66,32 @@ export default function FirstPersonPlayer({ shields = 0 }) {
       player.z = 0
     }
 
-    // 1. Double Click (Klik 2x) untuk mengaktifkan Pointer Lock di Laptop/Desktop
+    // 1. Double Click (Klik 2x) untuk mengaktifkan / menonaktifkan Kontrol 360° Mouse di Laptop/Desktop
     const handleDoubleClick = (e) => {
       if (
         e?.target?.closest &&
-        e.target.closest('button, input, select, textarea, [role="button"], a, .pointer-events-auto, [data-no-drag]')
+        e.target.closest('button:not([data-pointerlock]), input, select, textarea, [role="dialog"]')
       ) {
         return
       }
-      if (document.pointerLockElement !== canvasRef.current) {
-        canvasRef.current?.requestPointerLock?.()
+      const canvas = canvasRef.current || document.querySelector('canvas') || document.body
+      if (!document.pointerLockElement) {
+        try {
+          const res = canvas.requestPointerLock?.()
+          if (res && typeof res.catch === 'function') {
+            res.catch(() => {})
+          }
+        } catch {
+          // ignore
+        }
+      } else {
+        document.exitPointerLock?.()
       }
     }
 
-    // 2. Pergerakan Mouse Laptop: Pointer Lock (movementX/Y) & Fallback Mouse Drag
+    // 2. Pergerakan Mouse Laptop: Pointer Lock (movementX/Y) & Fallback Mouse Drag Bebas 360°
     const onMouseMove = (e) => {
-      const isLocked = Boolean(
-        document.pointerLockElement && document.pointerLockElement === canvasRef.current,
-      )
+      const isLocked = Boolean(document.pointerLockElement)
 
       if (isLocked) {
         const mx = e.movementX ?? e.mozMovementX ?? e.webkitMovementX ?? 0
@@ -114,10 +122,10 @@ export default function FirstPersonPlayer({ shields = 0 }) {
 
     const onMouseDown = (e) => {
       if (e.button !== 0) return
-      if (document.pointerLockElement === canvasRef.current) return
+      if (document.pointerLockElement) return
       if (
         e.target?.closest &&
-        e.target.closest('button, input, select, textarea, [role="button"], a, .pointer-events-auto, [data-no-drag]')
+        e.target.closest('button, input, select, textarea, [role="dialog"]')
       ) {
         return
       }
