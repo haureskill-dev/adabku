@@ -46,6 +46,12 @@ const docsToConvert = [
     title: 'PROMPT JOURNAL - ADABKU 3D GAME',
     subtitle: 'Curated 5 Main Prompts & Raw Prompts Documentation for AI Agentic Development',
   },
+  {
+    input: 'Jurnal_Prompt_dan_Log_Mentah_Adabku.md',
+    outputPdf: 'Jurnal_Prompt_dan_Log_Mentah_Adabku.pdf',
+    title: 'JURNAL PROMPT DAN LOG PROMPT MENTAH',
+    subtitle: 'Adabku - Bagian 1: 5 Prompt Terkurasi (Depan) & Bagian 2: Lampiran Log Mentah (Belakang)',
+  },
 ]
 
 function convertMarkdownToPdf(docConfig) {
@@ -190,8 +196,24 @@ function convertMarkdownToPdf(docConfig) {
         continue
       }
 
-      // Markdown H1 (Skip if it repeats title)
+      // Markdown H1 (Major Section Break)
       if (trimmed.startsWith('# ')) {
+        flushQuote()
+        const textH1 = trimmed.replace('# ', '').trim()
+        if (textH1.startsWith('=')) continue
+        if (textH1.toUpperCase().includes('BAGIAN 2')) {
+          doc.addPage()
+        }
+        if (doc.y + 40 > doc.page.height - doc.page.margins.bottom) {
+          doc.addPage()
+        }
+        doc.moveDown(0.6)
+        doc
+          .fontSize(14)
+          .font('Helvetica-Bold')
+          .fillColor('#065f46')
+          .text(textH1)
+          .moveDown(0.3)
         continue
       }
 
