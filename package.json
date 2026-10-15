@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "node scripts/build.mjs",
     "docs:convert": "node scripts/convert_docs.mjs",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } from 'docx'
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx'
 import PDFDocument from 'pdfkit'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -139,7 +139,7 @@ async function generateDocx() {
       currentBlockQuote.push(clean)
     } else if (line.startsWith('* **') || line.startsWith('- **')) {
       // Bullet point with bold prefix
-      const match = line.match(/^[\*\-]\s+\*\*(.*?)\*\*(.*)$/)
+      const match = line.match(/^[*-]\s+\*\*(.*?)\*\*(.*)$/)
       if (match) {
         children.push(
           new Paragraph({
@@ -156,7 +156,7 @@ async function generateDocx() {
           new Paragraph({
             bullet: { level: 0 },
             spacing: { before: 60, after: 60 },
-            children: [new TextRun({ text: line.replace(/^[\*\-]\s+/, ''), size: 22, font: 'Arial' })],
+            children: [new TextRun({ text: line.replace(/^[*-]\s+/, ''), size: 22, font: 'Arial' })],
           })
         )
       }
@@ -258,7 +258,6 @@ function generatePdf() {
       })
       .moveDown(1.2)
 
-    let inQuote = false
     let quoteBuffer = []
 
     const flushQuote = () => {
@@ -324,7 +323,7 @@ function generatePdf() {
         quoteBuffer.push(clean)
       } else if (line.startsWith('* **') || line.startsWith('- **')) {
         flushQuote()
-        const match = line.match(/^[\*\-]\s+\*\*(.*?)\*\*(.*)$/)
+        const match = line.match(/^[*-]\s+\*\*(.*?)\*\*(.*)$/)
         if (match) {
           doc
             .fontSize(9.5)
@@ -340,7 +339,7 @@ function generatePdf() {
             .fontSize(9.5)
             .font('Helvetica')
             .fillColor('#334155')
-            .text(`• ${line.replace(/^[\*\-]\s+/, '')}`)
+            .text(`• ${line.replace(/^[*-]\s+/, '')}`)
             .moveDown(0.2)
         }
       } else if (line.startsWith('1. ') || line.startsWith('2. ') || line.startsWith('3. ') || line.startsWith('4. ') || line.startsWith('5. ')) {
